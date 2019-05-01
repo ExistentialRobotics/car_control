@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>car_control</name>
+  <version>0.1.0</version>
+  <description>The controller package for ground robot</description>
+  <maintainer email="tduong@eng.ucsd.edu">Thai Duong</maintainer>
+  <license>BSD</license>
+  <author email="tduong@eng.ucsd.edu">Thai Duong</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+</package>
