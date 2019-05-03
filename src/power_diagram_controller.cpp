@@ -19,9 +19,9 @@ PowerDiagramController::PowerDiagramController(ros::NodeHandle& nodeHandle) :
   }
 
   path = nav_msgs::Path();
-  cmd_pub = node_handle.advertise<geometry_msgs::Twist>( "/scarab40/mobile_base/commands/velocity", 1 );
-  path_pub= node_handle.advertise<nav_msgs::Path>( "/path", 1 );
-  odom_sub= node_handle.subscribe("/scarab40/ground_truth/odom",1,&PowerDiagramController::odomCallback,this);
+  cmd_pub = node_handle.advertise<geometry_msgs::Twist>( cmd_topic, 1 );
+  path_pub= node_handle.advertise<nav_msgs::Path>( path_topic, 1 );
+  odom_sub= node_handle.subscribe(odom_topic,1,&PowerDiagramController::odomCallback,this);
 }
 
 PowerDiagramController::~PowerDiagramController()
