@@ -4,6 +4,7 @@ This repo contains code for car controllers.
 This node calculates twist so that a differential drive robot follows a given polynomial trajectory based on this paper: https://ieeexplore.ieee.org/document/7487090
 
 ### Launch script
+    roslaunch car_control scarab_control.launch
 
  	<!-- Run controller in C++ -->
   	<node name="power_diagram_controller" pkg="car_control" type="car_control" output="screen">
