@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<launch>
+  <arg name="ns" default="racecar01" />
+  
+	<!-- Spawn the World -->
+  <include file="$(find erl_models)/launch/spawn_world.launch">
+    <arg name="world" value="fla_warehouse1"/>
+    <arg name="scale" value="1"/>
+    <arg name="gui" value="false"/>
+  </include>
+
+  <!-- Spawn the Racecar -->
+  <include file="$(find erl_models)/launch/spawn_robot.launch">
+    <arg name="ns" value="$(arg ns)"/>
+    <arg name="tf_prefix" value="$(arg ns)" />    
+    <arg name="model" value="$(find erl_models)/urdf/racecar/racecar.xacro"/>
+    <arg name="px" value="0.0" />
+    <arg name="py" value="0.0" />
+    <arg name="pz" value="0.05" />
+    <arg name="use_groundtruth_odom" value="true" />
+  </include>
+  
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <group ns="$(arg ns)">
+    <rosparam file="$(find erl_models)/urdf/racecar/racecar_control.yaml" command="load"/>
+  </group>
+  
+  <!-- load the controllers -->
+  <node name="controller_manager" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="$(arg ns)" args="left_rear_wheel_velocity_controller right_rear_wheel_velocity_controller
+                                             left_front_wheel_velocity_controller right_front_wheel_velocity_controller
+                                             left_steering_hinge_position_controller right_steering_hinge_position_controller
+                                             joint_state_controller"/>
+                                             
+  <!-- Launch rviz -->
+  <node pkg="rviz" type="rviz" name="rviz"
+        args="-d $(find erl_models)/rviz/racecar01.cfg.rviz"/>
+
+  <!-- servo node -->
+  <node pkg="erl_models" type="servo_commands.py" name="servo_commands" output="screen">
+    <remap from="/racecar/ackermann_cmd_mux/output" to="/vesc/low_level/ackermann_cmd_mux/output"/>
+    <remap from="/racecar/left_rear_wheel_velocity_controller/command" to="/$(arg ns)/left_rear_wheel_velocity_controller/command"/>
+    <remap from="/racecar/right_rear_wheel_velocity_controller/command" to="/$(arg ns)/right_rear_wheel_velocity_controller/command"/>
+    <remap from="/racecar/left_front_wheel_velocity_controller/command" to="/$(arg ns)/left_front_wheel_velocity_controller/command"/>
+    <remap from="/racecar/right_front_wheel_velocity_controller/command" to="/$(arg ns)/right_front_wheel_velocity_controller/command"/>
+    <remap from="/racecar/left_steering_hinge_position_controller/command" to="/$(arg ns)/left_steering_hinge_position_controller/command"/>
+    <remap from="/racecar/right_steering_hinge_position_controller/command" to="/$(arg ns)/right_steering_hinge_position_controller/command"/>
+  </node>
+  
+  
+  <!-- Allow for Gazebo to broadcast odom -->
+  <!--node pkg="erl_models" name="gazebo_odometry_node" type="gazebo_odometry.py"/-->
+
+  <!-- Velocity muxer -->
+  <!--arg name="racecar_version" default="$(arg ns)" />
+  <include file="$(find erl_models)/launch/racecar/mux.launch" ns="vesc" /-->
+
+
+  <!-- Velocity muxer -->
+  <arg name="racecar_version" default="$(arg ns)" />
+  <include file="$(find racecar)/launch/mux.launch" ns="vesc" />
+
+  <!-- Run Racecar Mapping 
+  <include file="$(find erl_models)/launch/racecar/racecar_mapping.launch">
+    <arg name="ns" value="$(arg ns)"/>
+    <arg name="tf_prefix" value="$(arg ns)" />
+    <arg name="scan_topic" value="scan" />
+    <arg name="base_frame" value="base_link"/>
+    <arg name="odom_frame" value="odom"/>
+    <arg name="map_frame"  value="map"/>        
+  </include>
+-->
+  <!-- Run sim connector 
+  <node pkg="erl_fastron_mapping" name="sim_connector_node" type="sim_connector.py"/>
+  -->
+
+  <!-- Run Racecar controller
+  <node name="fastron_controller" pkg="erl_fastron_mapping" type="fastron_controller" output="screen">
+      <remap from="goal" to="/move_base_simple/goal"/>
+      <remap from="scan" to="/$(arg ns)/scan"/>
+  </node>
+ -->
+  <!-- Run sim connector 
+  <node pkg="erl_fastron_mapping" name="control_dispatcher" type="control_dispatcher.py"/>
+-->
+  <!-- Convert laser to pointcloud 
+  <node name="laser2point" pkg="erl_fastron_mapping" type="laser2point" output="screen">
+  </node>
+-->
+  <!-- Run Racecar controller 
+  <node name="resampling_node" pkg="erl_fastron_mapping" type="resampling_node.py" output="screen">
+  </node>
+-->
+  <!-- Run Racecar controller 
+  <node name="fastron_node" pkg="erl_fastron_mapping" type="fastron_node.py" output="screen">
+  </node>
+-->
+ <!-- Run controller in C++ -->
+  <node name="power_diagram_controller" pkg="car_control" type="car_control" output="screen">
+    <param name="/cmd_vel" value="/cmd_vel" />
+    <param name="/path" value="/path" />
+    <param name="/odom" value="/racecar01/ground_truth/odom" />
+    <param name="/kl" value="1" />
+    <param name="/ka" value="0.2" />
+    <param name="/goal_threshold" value="0.1" />
+    <param name="/T" value="40" />
+  </node>
+  <!-- Run sim connector 
+  <node pkg="erl_fastron_mapping" name="racecar_control" type="racecar_control.py" output="screen"/>
+-->
+  <!-- Run cmd_vel_to_ackermann -->
+  <node pkg="car_control" name="cmd_vel_to_ackermann_drive" type="cmd_vel_to_ackermann_drive.py"/>
+
+</launch>
+
+

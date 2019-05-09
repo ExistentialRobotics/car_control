@@ -32,18 +32,24 @@ bool PowerDiagramController::getParams()
 {
   if (!node_handle.getParam("/power_diagram_controller/cmd_vel",cmd_topic))
     return false;
+  ROS_INFO("cmd_topic = %s", cmd_topic.c_str());
   if (!node_handle.getParam("/power_diagram_controller/path", path_topic))
     return false;
+  ROS_INFO("path_topic = %s", path_topic.c_str());
   if (!node_handle.getParam("/power_diagram_controller/odom", odom_topic))
     return false;
+  ROS_INFO("odom_topic = %s", odom_topic.c_str());
   if (!node_handle.getParam("/power_diagram_controller/kl", kl))
     return false;
+  ROS_INFO("kl = %f", kl);
   if (!node_handle.getParam("/power_diagram_controller/ka", ka))
     return false;
+  ROS_INFO("ka = %f", ka);
   if (!node_handle.getParam("/power_diagram_controller/goal_threshold", goal_threshold))
     goal_threshold = 0.1;
   if (!node_handle.getParam("/power_diagram_controller/T", T))
     T = 10;
+  return true;
 }
 void PowerDiagramController::odomCallback(const nav_msgs::Odometry& odoms)
 {
@@ -134,6 +140,7 @@ void PowerDiagramController::calculatePath(double t, double x0, double y0, doubl
 {
   double vx = 1.0, vy = 5.0;
   double ax = -10.0, ay = 0.2;
+
   xt = x0 + vx*t + ax*t*t/2;
   yt = y0 + vy*t + ay*t*t/2;
 }
