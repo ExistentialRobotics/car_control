@@ -3,16 +3,24 @@
 # Author: christoph.roesmann@tu-dortmund.de
 
 import rospy, math
+import numpy as np
 from geometry_msgs.msg import Twist
 from ackermann_msgs.msg import AckermannDriveStamped
-
+max_angle = np.pi/6
+max_speed = 2.0
 
 def convert_trans_rot_vel_to_steering_angle(v, omega, wheelbase):
+  global max_angle, max_speed
   if omega == 0 or v == 0:
     return 0
 
   radius = v / omega
-  return math.atan(wheelbase / radius)
+  angle = math.atan(wheelbase / radius)
+  if angle > max_angle:
+    angle = max_angle
+  if angle < -max_angle:
+    angle = -max_angle
+  return angle
 
 
 def cmd_callback(data):
@@ -20,8 +28,13 @@ def cmd_callback(data):
   global ackermann_cmd_topic
   global frame_id
   global pub
+  global max_angle, max_speed
   
   v = data.linear.x
+  if v > max_speed:
+    v = max_speed
+  if v < -max_speed:
+    v = -max_speed
   steering = convert_trans_rot_vel_to_steering_angle(v, data.angular.z, wheelbase)
   
   msg = AckermannDriveStamped()

@@ -49,6 +49,14 @@ bool PowerDiagramController::getParams()
     goal_threshold = 0.1;
   if (!node_handle.getParam("/power_diagram_controller/T", T))
     T = 10;
+  if (!node_handle.getParam("/power_diagram_controller/vx", vx))
+      vx = 1.0;
+  if (!node_handle.getParam("/power_diagram_controller/vy", vy))
+      vy = 0.0;
+  if (!node_handle.getParam("/power_diagram_controller/ax", ax))
+      ax = 0.0;
+  if (!node_handle.getParam("/power_diagram_controller/ay", ay))
+      ay = 0.0;
   return true;
 }
 void PowerDiagramController::odomCallback(const nav_msgs::Odometry& odoms)
@@ -138,9 +146,6 @@ void PowerDiagramController::genPath(int point_count)
 
 void PowerDiagramController::calculatePath(double t, double x0, double y0, double &xt, double &yt)
 {
-  double vx = 1.0, vy = 5.0;
-  double ax = -10.0, ay = 0.2;
-
   xt = x0 + vx*t + ax*t*t/2;
   yt = y0 + vy*t + ay*t*t/2;
 }

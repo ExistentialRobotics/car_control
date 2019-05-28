@@ -34,7 +34,7 @@
                                              
   <!-- Launch rviz -->
   <node pkg="rviz" type="rviz" name="rviz"
-        args="-d $(find erl_models)/rviz/racecar01.cfg.rviz"/>
+        args="-d $(find car_control)/rviz/racecar01.cfg.rviz"/>
 
   <!-- servo node -->
   <node pkg="erl_models" type="servo_commands.py" name="servo_commands" output="screen">
@@ -100,10 +100,14 @@
     <param name="/cmd_vel" value="/cmd_vel" />
     <param name="/path" value="/path" />
     <param name="/odom" value="/racecar01/ground_truth/odom" />
-    <param name="/kl" value="1" />
-    <param name="/ka" value="0.2" />
+    <param name="/kl" value="0.5" />
+    <param name="/ka" value="0.5" />
     <param name="/goal_threshold" value="0.1" />
-    <param name="/T" value="40" />
+    <param name="/T" value="20" />
+    <param name="/vx" value="10.0" />
+    <param name="/vy" value="0.0" />
+    <param name="/ax" value="0.0" />
+    <param name="/ay" value="0.0" />
   </node>
   <!-- Run sim connector 
   <node pkg="erl_fastron_mapping" name="racecar_control" type="racecar_control.py" output="screen"/>

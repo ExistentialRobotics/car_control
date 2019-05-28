@@ -67,6 +67,10 @@
     <param name="/ka" value="0.1" />
     <param name="/goal_threshold" value="0.1" />
     <param name="/T" value="40" />
+    <param name="/vx" value="10.0" />
+    <param name="/vy" value="0.0" />
+    <param name="/ax" value="0.0" />
+    <param name="/ay" value="0.0" />
   </node>
   <!-- Run controller in python
   <node pkg="erl_fastron_mapping" name="scarab_control" type="scarab_control.py" output="screen"/>

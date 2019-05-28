@@ -72,6 +72,7 @@ private:
   double T;
 	// Controller gains
 	double kl, ka, goal_threshold;
+	double vx, vy, ax, ay;
 
 };
 
