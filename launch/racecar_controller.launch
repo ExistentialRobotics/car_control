@@ -104,10 +104,11 @@
     <param name="/ka" value="0.5" />
     <param name="/goal_threshold" value="0.1" />
     <param name="/T" value="20" />
-    <param name="/vx" value="10.0" />
-    <param name="/vy" value="0.0" />
-    <param name="/ax" value="0.0" />
-    <param name="/ay" value="0.0" />
+    <param name="/vx" value="2.0" />
+    <param name="/vy" value="7.0" />
+    <param name="/ax" value="-1.0" />
+    <param name="/ay" value="1.0" />
+    <param name="user_defined_goal" value="false" type="bool"/>
   </node>
   <!-- Run sim connector 
   <node pkg="erl_fastron_mapping" name="racecar_control" type="racecar_control.py" output="screen"/>
