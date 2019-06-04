@@ -7,7 +7,7 @@ import numpy as np
 from geometry_msgs.msg import Twist
 from ackermann_msgs.msg import AckermannDriveStamped
 max_angle = np.pi/12
-max_speed = 2
+max_speed = 0.7
 
 def convert_trans_rot_vel_to_steering_angle(v, omega, wheelbase):
   global max_angle, max_speed

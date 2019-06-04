@@ -82,10 +82,11 @@ void PowerDiagramController::odomCallback(const nav_msgs::Odometry& odoms)
 
 void PowerDiagramController::astarPathCallback(const nav_msgs::Path::ConstPtr& msg)
 {
-    astar_path = *msg;
-    init_path_time = ros::Time::now();
+
     if (msg->poses.size() > 2)
     {
+        astar_path = *msg;
+        init_path_time = ros::Time::now();
         geometry_msgs::PoseStamped immediate_goal = msg->poses[1];
         goal = &immediate_goal;
     }
@@ -103,7 +104,7 @@ geometry_msgs::Twist PowerDiagramController::getCmd()
     {
         if (goal)
         {
-            pathTracker(0.04, init_path_time, goal_x, goal_y);
+            pathTracker(0.015, init_path_time, goal_x, goal_y);
         }
         else
         {
@@ -182,23 +183,47 @@ void PowerDiagramController::calculatePath(double t, double x0, double y0, doubl
 
 void PowerDiagramController::pathTracker(double v, ros::Time init_time, double &xt, double &yt)
 {
+    static double prev_len = 0;
+    static ros::Time prev_init_time = init_t;
     ros::Time current_t = ros::Time::now();
     ros::Duration delta_t = current_t - init_t;
     double ahead = 0.0;
-    double t = std::min(delta_t.toSec() + ahead, T);
+
     double tracker_t = 0;
     double t_i = 0;
+    double path_len = 0;
     int i = 0;
+    std::vector<double> seg_len, seg_t;
     for (i = 0; i < astar_path.poses.size() - 1; i++)
     {
         double length = sqrt(pow((astar_path.poses[i].pose.position.x - astar_path.poses[i+1].pose.position.x),2) +
                              pow((astar_path.poses[i].pose.position.y - astar_path.poses[i+1].pose.position.y),2));
+        path_len += length;
         t_i = length/v;
+        seg_len.push_back(length);
+        seg_t.push_back(t_i);
+    }
+
+    double t = std::min(delta_t.toSec() + ahead, path_len/v);
+    if (false) //fabs(prev_len - path_len) < 0.1)
+    {
+        delta_t = current_t - prev_init_time;
+        t = std::min(delta_t.toSec() + ahead, path_len/v);
+    }
+    else
+    {
+        prev_init_time = init_t;
+        prev_len = path_len;
+    }
+
+    for (i = 0; i < astar_path.poses.size() - 1; i++)
+    {
+        double length = seg_len[i];
+        t_i = seg_t[i];
         tracker_t += t_i;
         if (tracker_t > t)
             break;
     }
-
 
     xt = astar_path.poses[i].pose.position.x + (astar_path.poses[i+1].pose.position.x - astar_path.poses[i].pose.position.x)*(tracker_t - t)/t_i;
     yt = astar_path.poses[i].pose.position.y + (astar_path.poses[i+1].pose.position.y - astar_path.poses[i].pose.position.y)*(tracker_t - t)/t_i;
