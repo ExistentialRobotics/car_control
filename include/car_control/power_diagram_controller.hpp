@@ -32,7 +32,7 @@ class PowerDiagramController {
     /*!
      * Odometry callback
      */
-    void goalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg);
+    void astarPathCallback(const nav_msgs::Path::ConstPtr& msg);
     /*!
      * calculate the position on the path at normalized time t, 0<=t<=1.
      */
@@ -50,13 +50,15 @@ class PowerDiagramController {
      */
     geometry_msgs::Twist getCmd();
 
+    void pathTracker(double T, ros::Time init_time, double &goal_x, double &goal_y);
+
  private:
     // Publishers and Subscribers
     ros::NodeHandle node_handle;
     ros::Publisher cmd_pub;
     ros::Publisher path_pub;
     ros::Subscriber odom_sub;
-    ros::Subscriber goal_sub;
+    ros::Subscriber path_sub;
     std::string cmd_topic, path_topic, odom_topic;
 
     // Current robot pose
@@ -71,8 +73,10 @@ class PowerDiagramController {
     // Path params
     bool update_path = true;
     nav_msgs::Path path;
-    geometry_msgs::PoseStamped::ConstPtr goal;
+    geometry_msgs::PoseStamped* goal;
     bool is_user_defined_goal = false;
+    nav_msgs::Path astar_path;
+    ros::Time init_path_time;
 
     // Controller params
     // T is the desired time to go from start to goal

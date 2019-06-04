@@ -22,7 +22,7 @@ PowerDiagramController::PowerDiagramController(ros::NodeHandle& nodeHandle) :
     cmd_pub = node_handle.advertise<geometry_msgs::Twist>( cmd_topic, 1 );
     path_pub= node_handle.advertise<nav_msgs::Path>( path_topic, 1 );
     odom_sub= node_handle.subscribe(odom_topic,1,&PowerDiagramController::odomCallback,this);
-    goal_sub = node_handle.subscribe("/move_base_simple/goal", 1, &PowerDiagramController::goalCallback,this);
+    path_sub = node_handle.subscribe("/astar_path", 1, &PowerDiagramController::astarPathCallback,this);
 }
 
 PowerDiagramController::~PowerDiagramController()
@@ -80,9 +80,16 @@ void PowerDiagramController::odomCallback(const nav_msgs::Odometry& odoms)
     cmd_pub.publish(cmd_vel);
 }
 
-void PowerDiagramController::goalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
+void PowerDiagramController::astarPathCallback(const nav_msgs::Path::ConstPtr& msg)
 {
-    goal = msg;
+    astar_path = *msg;
+    init_path_time = ros::Time::now();
+    if (msg->poses.size() > 2)
+    {
+        geometry_msgs::PoseStamped immediate_goal = msg->poses[1];
+        goal = &immediate_goal;
+    }
+
 }
 
 geometry_msgs::Twist PowerDiagramController::getCmd()
@@ -96,8 +103,7 @@ geometry_msgs::Twist PowerDiagramController::getCmd()
     {
         if (goal)
         {
-            goal_x = goal->pose.position.x;
-            goal_y = goal->pose.position.y;
+            pathTracker(0.04, init_path_time, goal_x, goal_y);
         }
         else
         {
@@ -107,7 +113,7 @@ geometry_msgs::Twist PowerDiagramController::getCmd()
     }
     else
     {
-        // Current goal to follow at time t
+        // Current goal to follow at time st
             this->calculatePath(t, init_x, init_y, goal_x, goal_y);
     }
     double linear_vel;
@@ -172,6 +178,32 @@ void PowerDiagramController::calculatePath(double t, double x0, double y0, doubl
 {
     xt = x0 + vx*t + ax*t*t/2;
     yt = y0 + vy*t + ay*t*t/2;
+}
+
+void PowerDiagramController::pathTracker(double v, ros::Time init_time, double &xt, double &yt)
+{
+    ros::Time current_t = ros::Time::now();
+    ros::Duration delta_t = current_t - init_t;
+    double ahead = 0.0;
+    double t = std::min(delta_t.toSec() + ahead, T);
+    double tracker_t = 0;
+    double t_i = 0;
+    int i = 0;
+    for (i = 0; i < astar_path.poses.size() - 1; i++)
+    {
+        double length = sqrt(pow((astar_path.poses[i].pose.position.x - astar_path.poses[i+1].pose.position.x),2) +
+                             pow((astar_path.poses[i].pose.position.y - astar_path.poses[i+1].pose.position.y),2));
+        t_i = length/v;
+        tracker_t += t_i;
+        if (tracker_t > t)
+            break;
+    }
+
+
+    xt = astar_path.poses[i].pose.position.x + (astar_path.poses[i+1].pose.position.x - astar_path.poses[i].pose.position.x)*(tracker_t - t)/t_i;
+    yt = astar_path.poses[i].pose.position.y + (astar_path.poses[i+1].pose.position.y - astar_path.poses[i].pose.position.y)*(tracker_t - t)/t_i;
+    //xt = astar_path.poses[i].pose.position.x; // + (astar_path.poses[i+1].pose.position.x - astar_path.poses[i].pose.position.x)*(tracker_t - t)/t_i;
+    //yt = astar_path.poses[i].pose.position.y; // + (astar_path.poses[i+1].pose.position.y - astar_path.poses[i].pose.position.y)*(tracker_t - t)/t_i;
 }
 
 } /* namespace */
