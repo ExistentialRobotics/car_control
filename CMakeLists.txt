@@ -1,55 +1,31 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(car_control)
 
-## Use C++11
-add_definitions(--std=c++11)
+add_compile_options(-std=c++11 -Wall)
 
-## Find catkin macros and libraries
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  sensor_msgs
-)
+# set default build type
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+endif()
 
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
+find_package(catkin REQUIRED COMPONENTS roscpp nav_msgs std_msgs tf)
+find_package(Eigen3 REQUIRED)
+
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
+
 catkin_package(
   INCLUDE_DIRS
-    include
-#  LIBRARIES
-  CATKIN_DEPENDS 
-    roscpp
-    sensor_msgs
-    
-#  DEPENDS 
-)
+  LIBRARIES
+  CATKIN_DEPENDS roscpp nav_msgs std_msgs tf
+  DEPENDS EIGEN3)
 
-###########
-## Build ##
-###########
+add_library(DDControl src/DDControl.cpp)
+add_library(power_diagram_control src/power_diagram_control.cpp)
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
-
-## Declare a C++ executable
-add_executable(${PROJECT_NAME}
-  src/power_diagram_controller_node.cpp
-  src/power_diagram_controller.cpp
-)
-
-## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-)
-
+add_executable(dd_control_node src/dd_control_node.cpp)
+add_executable(power_diagram_node src/power_diagram_node.cpp)
+add_dependencies(dd_control_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(dd_control_node DDControl ${catkin_LIBRARIES})
+add_dependencies(power_diagram_node ${catkin_EXPORTED_TARGETS})
+target_link_libraries(power_diagram_node power_diagram_control DDControl ${catkin_LIBRARIES})
 
