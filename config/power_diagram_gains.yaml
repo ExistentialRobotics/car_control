@@ -1,3 +1,5 @@
 gains:
-  ka: 0.75
-  kl: 3.5
+  ka: 1.0
+  kl: 2.0
+vmax: 2.0
+wmax: 2.0
