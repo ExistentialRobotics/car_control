@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(car_control)
 
-add_compile_options(-std=c++11 -Wall)
-
 # set default build type
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE RelWithDebInfo)
 endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wno-deprecated-declarations")
 
 find_package(catkin REQUIRED COMPONENTS roscpp nav_msgs std_msgs tf)
 find_package(Eigen3 REQUIRED)
