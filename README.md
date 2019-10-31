@@ -3,9 +3,10 @@ This package contains a collection of nodes that perform local control driving a
 differential drive robot to a desired state.
 
 
-This node controls a differential drive robot to reach a desired position. 
+The dd_control_node controller is based on the intuition
+from https://cs.gmu.edu/~kosecka/cs485/lec04-control.pdf,
+while the power_diagram_node is based on the paper: https://repository.upenn.edu/ese_papers/724/.
 
-The controller is based on the intuition from https://cs.gmu.edu/~kosecka/cs485/lec04-control.pdf
 
 ## C++ and ROS Usage
 
