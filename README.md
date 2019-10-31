@@ -1,22 +1,35 @@
-# Differential Drive Controller
+# Car Control
+This package contains a collection of nodes that perform local control driving a
+differential drive robot to a desired state.
+
+
 This node controls a differential drive robot to reach a desired position. 
 
 The controller is based on the intuition from https://cs.gmu.edu/~kosecka/cs485/lec04-control.pdf
 
 ## C++ and ROS Usage
 
-Example Launch script:
+Example Launching the Controller Nodes:
 
     <!--Launch a DD Controller Node -->
     <group ns="$(arg ns)">
-      <node name="dd_control_node" pkg="dd_control" type="dd_control_node" output="screen"
+      <node name="dd_control_node" pkg="car_control" type="dd_control_node" output="screen"
       args="">
             <remap from="~odom" to="ground_truth/odom"/>
             <remap from="~commands" to="mobile_base/commands/velocity"/>
             <rosparam file="$(find dd_control)/config/dd_gains.yaml"/>
       </node>
     </group>
-  
+
+    <!--Launch a Power Diagram Node -->
+    <group ns="$(arg ns)">
+      <node name="dd_control_node" pkg="car_control" type="power_diagram_node" output="screen"
+      args="">
+            <remap from="~odom" to="ground_truth/odom"/>
+            <remap from="~commands" to="mobile_base/commands/velocity"/>
+            <rosparam file="$(find dd_control)/config/dd_gains.yaml"/>
+      </node>
+    </group>
 
 ## Python Usage
 

@@ -22,9 +22,10 @@ add_library(DDControl src/DDControl.cpp)
 add_library(power_diagram_control src/power_diagram_control.cpp)
 
 add_executable(dd_control_node src/dd_control_node.cpp)
-add_executable(power_diagram_node src/power_diagram_node.cpp)
 add_dependencies(dd_control_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dd_control_node DDControl ${catkin_LIBRARIES})
+
+add_executable(power_diagram_node src/power_diagram_node.cpp)
 add_dependencies(power_diagram_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(power_diagram_node power_diagram_control DDControl ${catkin_LIBRARIES})
 
