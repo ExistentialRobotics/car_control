@@ -79,7 +79,7 @@ void DDControlNode::position_cmd_callback(const geometry_msgs::PoseStamped::Cons
 //  des_yaw_dot_ = cmd->yaw_dot;
   position_cmd_updated_ = true;
   position_cmd_active_ = true;
-  ROS_INFO("Received position command %f %f %f\n", des_pos_[0], des_pos_[1], des_yaw_);
+  ROS_INFO_THROTTLE(2.0, "Received position command %f %f %f\n", des_pos_[0], des_pos_[1], des_yaw_);
   publishDDCommand();
 }
 
