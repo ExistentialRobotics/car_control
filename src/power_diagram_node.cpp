@@ -27,11 +27,12 @@ class PowerDiagramControlNode
  private:
   void publishDDCommand(void);
   void position_cmd_callback(const geometry_msgs::PoseStamped::ConstPtr &cmd);
+  void pose_callback(const geometry_msgs::PoseStamped::ConstPtr &pose);
   void odom_callback(const nav_msgs::Odometry::ConstPtr &odom);
 
   PowerDiagramControl controller_;
   ros::Publisher dd_command_pub;
-  ros::Subscriber odom_sub_, position_cmd_sub_;
+  ros::Subscriber odom_sub_, pose_sub_, position_cmd_sub_;
 
   bool position_cmd_updated_ {false}, position_cmd_active_ {false};
   std::string frame_id_;
@@ -113,11 +114,38 @@ void PowerDiagramControlNode::odom_callback(const nav_msgs::Odometry::ConstPtr &
   }
 }
 
+void PowerDiagramControlNode::pose_callback(const geometry_msgs::PoseStamped::ConstPtr &pose)
+{
+  have_odom_ = true;
+
+  const Eigen::Vector3d position(pose->pose.position.x,
+                                 pose->pose.position.y,
+                                 pose->pose.position.z);
+  double current_yaw_ = tf::getYaw(pose->pose.orientation);
+
+  controller_.setPosition(position);
+  controller_.setHeading(current_yaw_);
+
+  if(position_cmd_active_)
+  {
+    // We set position_cmd_updated_ = false and expect that the
+    // position_cmd_callback would set it to true since typically a position_cmd
+    // message would follow an odom message. If not, the position_cmd_callback
+    // hasn't been called and we publish the DD command ourselves
+    if(!position_cmd_updated_)
+      publishDDCommand(); 
+    position_cmd_updated_ = false;
+
+    position_cmd_active_ = !controller_.checkReachedGoal(des_pos_, des_yaw_);
+  }
+}
+
 void PowerDiagramControlNode::onInit(void) {
   ros::NodeHandle n("~");
   std::string robot_name;
   // Setup Subscribers
   odom_sub_ = n.subscribe("odom", 10, &PowerDiagramControlNode::odom_callback, this, ros::TransportHints().tcpNoDelay());
+  pose_sub_ = n.subscribe("pose", 10, &PowerDiagramControlNode::pose_callback, this, ros::TransportHints().tcpNoDelay());
   position_cmd_sub_ = n.subscribe("position_cmd", 10, &PowerDiagramControlNode::position_cmd_callback, this,
                                   ros::TransportHints().tcpNoDelay());
   // Setup Publisher
