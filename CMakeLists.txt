@@ -33,3 +33,17 @@ add_executable(power_diagram_node src/power_diagram_node.cpp)
 add_dependencies(power_diagram_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(power_diagram_node power_diagram_control DDControl ${catkin_LIBRARIES})
 
+install(DIRECTORY
+  config
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  FILES_MATCHING PATTERN "*.yaml"
+  )
+
+install(TARGETS dd_control_node power_diagram_node
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS DDControl power_diagram_control
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
