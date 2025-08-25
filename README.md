@@ -13,6 +13,8 @@ while the power_diagram_node is based on the paper: https://repository.upenn.edu
 The nodes take in the target pose from `~position_cmd` and the current pose/odometry from `~pose`
 or `~odom`. And then output the velocity commands to `~commands`.
 
+The recommended angular-to-linear gain ratio is 3:1.
+
 Example Launching the Controller Nodes:
 
 ```xml
