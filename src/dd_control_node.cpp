@@ -28,6 +28,8 @@ private:
     void
     publishDDCommand(void);
     void
+    publishZeroCommand(void);
+    void
     position_cmd_callback(const geometry_msgs::PoseStamped::ConstPtr &cmd);
     void
     odom_callback(const nav_msgs::Odometry::ConstPtr &odom);
@@ -63,6 +65,25 @@ DDControlNode::publishDDCommand(void) {
     dd_command->linear.x = v;
     dd_command->angular.z = w;
     ROS_INFO_THROTTLE(2.0, "Publishing DD Command %f %f\n", v, w);
+
+    // Publish Twist Message.
+    dd_command_pub.publish(dd_command);
+}
+
+void
+DDControlNode::publishZeroCommand(void) {
+    if (!have_odom_) {
+        ROS_WARN("No odometry! Not publishing ZeroCommand.");
+        return;
+    }
+
+    const double v = 0.0;
+    const double w = 0.0;
+    // Setup Twist Message here.
+    geometry_msgs::Twist::Ptr dd_command(new geometry_msgs::Twist);
+    dd_command->linear.x = v;
+    dd_command->angular.z = w;
+    ROS_INFO_THROTTLE(2.0, "Publishing Zero Command");
 
     // Publish Twist Message.
     dd_command_pub.publish(dd_command);
@@ -111,6 +132,8 @@ DDControlNode::odom_callback(const nav_msgs::Odometry::ConstPtr &odom) {
         position_cmd_updated_ = false;
 
         position_cmd_active_ = !controller_.checkReachedGoal(des_pos_, des_yaw_);
+    } else {
+        publishZeroCommand();
     }
 }
 
