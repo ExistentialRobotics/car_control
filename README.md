@@ -37,6 +37,27 @@ Example Launching the Controller Nodes:
         <remap from="~commands" to="<your_commands_topic>"/>
   </node>
 </group>
+
+<!--Launch a Cone Controller Node -->
+<group ns="$(arg ns)">
+    <node pkg="car_control" type="cone_controller_node.py" name="cone_controller"  output="screen">
+        <param name="odom_topic" value="<your_odom_topic>"/>
+        <param name="odom_type" value="<your_odom_message_type_{Odom/PoseS}>"/>
+        <param name="setpoint_topic" value="<your_target_pose_topic>"/>
+        <param name="setpoint_type" value="<your_target_pose_message_type_{Pose2/PoseS}>"/>
+        <remap from="/cmd_vel" to="<your_commands_topic>" />
+        <param name="ctrl_freq" value="50.0"/>
+        <param name="kv" value="0.5"/>
+        <param name="kw" value="1.5"/>
+        <!-- Control limits are set as the same as in control.yaml in jackal_control package -->
+        <!-- linear velocity limit m/sec-->
+        <param name="v_min" value="-2.0"/>
+        <param name="v_max" value="2.0"/>
+        <!-- angular velocity limit rad/sec-->
+        <param name="w_min" value="-4.0"/>
+        <param name="w_max" value="4.0"/>
+    </node>
+</group>
 ```
 
 ## Python Usage
