@@ -1,33 +1,21 @@
-<package>
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>car_control</name>
-  <version>1.0.0</version>
-  <description>dd_control</description>
-  <maintainer email="brentsc@seas.upenn.edu">Brent Schlotfeldt</maintainer>
+  <version>0.1.0</version>
+  <description>Low-level velocity controller for a unicycle-like robot (ROS 2).</description>
 
-  <license>BSD</license>
+  <maintainer email="yiyi@ucsd.edu">YiYi</maintainer>
+  <license>TODO</license>
 
-  <url type="website">http://ros.org/</url>
-  <!-- <url type="bugtracker"></url> -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>tf-transformations</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
 
-  <author>Brent Schlotfeldt</author>
-
-  <!-- Dependencies which this package needs to build itself. -->
-  <buildtool_depend>catkin</buildtool_depend>
-
-  <!-- Dependencies needed to compile this package. -->
-  <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>nav_msgs</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>tf</build_depend>
-
-  <!-- <build_depend>cmake_modules</build_depend> -->
-
-  <!-- Dependencies needed after this package is compiled. -->
-  <run_depend>roscpp</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>nav_msgs</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>tf</run_depend>
-
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
 </package>
