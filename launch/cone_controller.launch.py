@@ -9,10 +9,15 @@ def generate_launch_description():
             name='cone_controller',
             output='screen',
             parameters=[{
-                # controller gains/limits
+                # controller general setup
+                'mode': "dd",
                 'ctrl_freq': 50.0,
+                # controller gains
                 'kv': 0.5,
                 'kw': 1.5,
+                'dd_ka': 8.0,
+                'dd_kb': -1.5,
+                # controller bounds
                 'v_min': -0.5,
                 'v_max': 2.0,
                 'w_min': -1.0,
