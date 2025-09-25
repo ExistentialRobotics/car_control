@@ -49,3 +49,7 @@ The parameter `kw` controls the angular gain in `cone` mode.
 
 The parameters `dd_ka` and `dd_kb` are only valid when operating in `dd` mode. 
 Those two parameters jointly control the angular gain in `dd` mode.
+
+Once the package has been built, modify the launch file located at: `/install/car_control/share/car_controll/launch` 
+to have immediate effect.
+
