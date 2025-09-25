@@ -10,7 +10,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 # controller general setup
-                'mode': "dd",
+                'mode': "cone",
                 'ctrl_freq': 50.0,
                 # controller gains
                 'kv': 0.5,
@@ -28,5 +28,8 @@ def generate_launch_description():
                 'odom_topic': '/odom',
                 'odom_type': 'poseS',
             }],
+            remappings=[
+                ('/cmd_vel', '/jackal1/cmd_vel'),
+            ]
         ),
     ])
