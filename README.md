@@ -1,6 +1,16 @@
-from launch import LaunchDescription
-from launch_ros.actions import Node
+# ROS2 Car Control
 
+This package contains a single node that perform local control driving a differential drive robot to a desired state.
+
+The power diagram controller has been removed since it uses the same control law as the cone controller.
+
+The DD controller shares the same finite-state-machine as the cone controller. 
+
+**Using the cone controller is highly recommended.**
+
+Example ROS2 launch file:
+
+```python
 def generate_launch_description():
     return LaunchDescription([
         Node(
@@ -33,3 +43,9 @@ def generate_launch_description():
             ]
         ),
     ])
+```
+The parameter `kv` controls the linear gain in both `cone` and `dd` modes. 
+The parameter `kw` controls the angular gain in `cone` mode.
+
+The parameters `dd_ka` and `dd_kb` are only valid when operating in `dd` mode. 
+Those two parameters jointly control the angular gain in `dd` mode.
